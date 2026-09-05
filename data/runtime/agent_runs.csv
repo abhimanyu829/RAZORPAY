@@ -1,0 +1,2 @@
+run_id,case_id,llm_provider,llm_model,rollout_level,status,started_at,finished_at,proposed_action,executed_action,verification_status,recovered_amount,errors
+RUN-FE8F1E00A178,CASE-9001,simulated,gpt-4o-mini,1,COMPLETED,2026-09-05T05:58:46Z,2026-09-05T05:58:46Z,DRAFT_DISPUTE,CREATE_DISPUTE,IN_PROGRESS,0.0,

@@ -1,0 +1,2 @@
+approval_id,case_id,action_id,risk_level,amount,requested_by,status,requested_at,decided_by,decided_at,decision_note
+APR-0001,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T05:58:46Z,finance-lead@example.com,2026-09-05T05:58:46Z,dev auto-decision
