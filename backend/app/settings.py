@@ -18,6 +18,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
+# Auto-load .env from project root (or cwd) before any os.environ reads.
+# Order: ROOT/.env → cwd/.env → already-set env vars always win (override=False).
+try:
+    from dotenv import load_dotenv as _load_dotenv
+    _loaded = _load_dotenv(ROOT / ".env", override=False) or \
+              _load_dotenv(override=False)  # fallback: cwd/.env
+except ImportError:
+    pass  # python-dotenv not installed — env vars must be set externally
+
 
 def business_now() -> datetime:
     """The authoritative clock for SLA/deadline decisions.

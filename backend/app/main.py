@@ -21,7 +21,7 @@ from .services.services import (case_service, agent_service,
                                 approval_service, recovery_service)
 from .connectors.registry import sync as connector_sync, health as connector_health
 from .connectors.webhooks import processor as webhook_processor, WebhookError
-from .services.repository import repo
+from .services.repository import repo, _to_float
 from .agent.prompts import build_case_payload
 from .tools.registry import registry
 
@@ -298,6 +298,188 @@ async def receive_webhook(source: str, request: Request):
         return webhook_processor.process(source, headers, body)
     except WebhookError as e:
         return JSONResponse({"error": str(e)}, status_code=400)
+
+
+# -------------------------------------------------------------- analytics
+@app.get("/api/v1/analytics/leakage-by-category")
+async def analytics_leakage_by_category(request: Request):
+    """Leakage + recovered amounts grouped by case category (dashboard charts)."""
+    await require_capability(request, "read")
+    from collections import defaultdict
+    agg = defaultdict(lambda: {"count": 0, "potential": 0.0, "recovered": 0.0})
+    rec = {l.get("case_id"): _to_float(l.get("amount"))
+           for l in repo.read("recovery_ledger") if l.get("status") == "RECOVERED"}
+    for c in repo.cases():
+        a = agg[c.get("category", "UNKNOWN")]
+        a["count"] += 1
+        a["potential"] += _to_float(c.get("potential_recovery") or c.get("potential_leakage"))
+        a["recovered"] += rec.get(c.get("case_id"), 0.0)
+    return {"rows": [{"category": k, **{kk: round(vv, 2) if isinstance(vv, float) else vv
+                                       for kk, vv in v.items()}} for k, v in agg.items()]}
+
+
+@app.get("/api/v1/analytics/cases-by-priority")
+async def analytics_cases_by_priority(request: Request):
+    await require_capability(request, "read")
+    from collections import Counter
+    counts = Counter(c.get("priority") for c in repo.cases())
+    return {"rows": [{"priority": k, "count": v} for k, v in counts.items()]}
+
+
+@app.get("/api/v1/analytics/action-distribution")
+async def analytics_action_distribution(request: Request):
+    await require_capability(request, "read")
+    from collections import Counter
+    counts = Counter(a.get("action_type") for a in repo.read("recovery_actions"))
+    return {"rows": [{"action": k, "count": v} for k, v in counts.items()]}
+
+
+@app.get("/api/v1/analytics/recovery-funnel")
+async def analytics_recovery_funnel(request: Request):
+    await require_capability(request, "read")
+    cases = repo.cases()
+    actions = repo.read("recovery_actions")
+    verifs = repo.read("verification_events")
+    ledger = repo.read("recovery_ledger")
+    disputes = [a for a in actions if a.get("action_type") == "CREATE_DISPUTE"]
+    return {"funnel": [
+        {"stage": "Cases", "count": len(cases)},
+        {"stage": "Investigated", "count": len([c for c in cases if c.get("status") != "NEW"])},
+        {"stage": "Disputes", "count": len(disputes)},
+        {"stage": "Verified", "count": len([v for v in verifs if v.get("status") == "RECOVERY_VERIFIED"])},
+        {"stage": "Ledger", "count": len([l for l in ledger if l.get("status") == "RECOVERED"])},
+    ]}
+
+
+@app.get("/api/v1/analytics/approaching-deadline")
+async def analytics_approaching_deadline(request: Request):
+    """Open cases sorted by nearest deadline (business clock aware)."""
+    await require_capability(request, "read")
+    from .settings import business_now
+    from datetime import datetime
+    now = business_now()
+    rows = []
+    for c in repo.cases():
+        dl = c.get("deadline_at", "")
+        if not dl or c.get("status") in ("RESOLVED", "CLOSED"):
+            continue
+        try:
+            d = datetime.fromisoformat(dl.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        rows.append({"case_id": c["case_id"], "order_id": c.get("order_id"),
+                     "category": c.get("category"), "deadline_at": dl,
+                     "days_left": (d - now).days,
+                     "potential_leakage": c.get("potential_leakage"),
+                     "priority": c.get("priority")})
+    rows.sort(key=lambda r: r["days_left"])
+    return {"rows": rows[:20]}
+
+
+@app.get("/api/v1/search")
+async def search(request: Request, q: str = Query("", min_length=2)):
+    """Transaction explorer: one query, any ID type → connected money view."""
+    await require_capability(request, "read")
+    q2 = q.strip()
+    result: dict = {"query": q2, "matches": []}
+    o = repo.get_order(q2)
+    if not o:
+        for cand in repo.read("orders"):
+            if cand.get("order_number") == q2 or cand.get("gateway_order_id") == q2:
+                o = cand
+                break
+    if o:
+        flow = case_service.money_flow(o["order_id"])
+        cases = [c for c in repo.cases() if c.get("order_id") == o["order_id"]]
+        result["matches"].append({"type": "ORDER", "order": o, "flow": flow, "cases": cases})
+    p = repo.get_payment(q2)
+    if not p:
+        for cand in repo.read("payments"):
+            if cand.get("gateway_payment_id") == q2:
+                p = cand
+                break
+    if p and not any(m.get("order", {}).get("order_id") == p.get("order_id")
+                     for m in result["matches"]):
+        result["matches"].append({"type": "PAYMENT", "payment": p,
+                                  "flow": case_service.money_flow(p["order_id"]), "cases": []})
+    s = None
+    for cand in repo.read("settlements"):
+        if cand.get("utr") == q2 or cand.get("settlement_id") == q2:
+            s = cand
+            break
+    if s and not any(m.get("order", {}).get("order_id") == s.get("payment_id")
+                     or m.get("order", {}).get("order_id") == s.get("payment_id")
+                     for m in result["matches"]):
+        p2 = repo.get_payment(s.get("payment_id", ""))
+        if p2 and not any(m.get("order", {}).get("order_id") == p2.get("order_id")
+                          for m in result["matches"]):
+            result["matches"].append({
+                "type": "SETTLEMENT", "settlement": s,
+                "flow": case_service.money_flow(p2.get("order_id", "")), "cases": []})
+    b = repo.bank_by_utr(q2)
+    if b:
+        result["matches"].append({"type": "BANK", "bank": b})
+    for cand in repo.read("invoices"):
+        if cand.get("invoice_id") == q2 or cand.get("invoice_number") == q2:
+            result["matches"].append({"type": "INVOICE", "invoice": cand,
+                                      "flow": case_service.money_flow(cand.get("order_id", "")),
+                                      "cases": []})
+            break
+    for cand in repo.read("customers"):
+        if cand.get("customer_id") == q2 or cand.get("email") == q2:
+            orders = [x.get("order_id") for x in repo.read("orders")
+                      if x.get("customer_id") == q2]
+            result["matches"].append({"type": "CUSTOMER", "customer": cand,
+                                      "orders": orders})
+            break
+    c = repo.get_case(q2)
+    if c:
+        result["matches"].append({"type": "CASE", "case": c,
+                                  "flow": case_service.money_flow(c.get("order_id", ""))})
+    return result
+
+
+@app.get("/api/v1/connectors/stats")
+async def connector_stats(request: Request):
+    await require_capability(request, "read")
+    runs = repo.read("connector_runs")
+    checkpoints = repo.read("connector_checkpoints")
+    webhooks = repo.read("webhook_events")
+    out = []
+    for cid in ("RAZORPAY_TEST", "SHOPIFY_DEV", "BANK_CSV", "ACCOUNTING_CSV"):
+        runs_c = [r for r in runs if r.get("connector_id") == cid]
+        ck = next((c2 for c2 in checkpoints if c2.get("connector_id") == cid), None)
+        out.append({
+            "connector_id": cid,
+            "last_run": runs_c[-1] if runs_c else None,
+            "checkpoint": ck,
+            "records_processed": sum(int(r.get("emitted", 0) or 0) for r in runs_c),
+            "duplicates": sum(int(r.get("duplicates", 0) or 0) for r in runs_c),
+            "quarantined": sum(int(r.get("quarantined", 0) or 0) for r in runs_c),
+            "errors": sum(1 for r in runs_c if r.get("errors")),
+            "webhook_events": len([w for w in webhooks
+                                   if cid.split("_")[0].startswith("RAZORPAY") and w.get("source_system") == "RAZORPAY"
+                                   or cid == "SHOPIFY_DEV" and w.get("source_system") == "SHOPIFY"
+                                   or cid == "BANK_CSV" and w.get("source_system") == "BANK"
+                                   or cid == "ACCOUNTING_CSV" and w.get("source_system") == "ACCOUNTING"]),
+        })
+    return {"connectors": out, "webhook_total": len(webhooks)}
+
+
+@app.get("/api/v1/audit")
+async def audit_list(request: Request, case_id: str | None = None,
+                     limit: int = Query(200, le=2000)):
+    await require_capability(request, "read")
+    rows = repo.read("audit_ledger")
+    if case_id:
+        rows = [r for r in rows if r.get("case_id") == case_id]
+    return {"audit": rows[-limit:]}
+
+
+@app.get("/api/v1/verification/events")
+async def verification_events(request: Request, limit: int = Query(200, le=1000)):
+    await require_capability(request, "read")
+    return {"events": repo.read("verification_events")[-limit:]}
 
 
 # ------------------------------------------------------------------- eval

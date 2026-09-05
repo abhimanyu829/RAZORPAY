@@ -1,0 +1,191 @@
+{
+  "pass": 37,
+  "fail": 0,
+  "results": [
+    {
+      "name": "healthy orders exist (849 of 1000 have no case)",
+      "ok": true,
+      "detail": "851"
+    },
+    {
+      "name": "zero healthy orders carry anomalies",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "leakage-classified recon rows equal anomaly-creating set only",
+      "ok": true,
+      "detail": "213 leak rows vs 150 cases"
+    },
+    {
+      "name": "search ORD-2 shows no case",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "execute via API returns 200",
+      "ok": true,
+      "detail": "status=200 {'run_id': 'RUN-C0C2D1E7956B', 'case_id': 'CASE-9001', 'status': 'COMPLETED', 'proposed_action': 'DR"
+    },
+    {
+      "name": "agent executed CREATE_DISPUTE",
+      "ok": true,
+      "detail": "CREATE_DISPUTE"
+    },
+    {
+      "name": "verification RECOVERY_VERIFIED",
+      "ok": true,
+      "detail": "RECOVERY_VERIFIED"
+    },
+    {
+      "name": "recovered exactly \u20b9250",
+      "ok": true,
+      "detail": "250.0"
+    },
+    {
+      "name": "\u20b9250 in ledger the frontend renders",
+      "ok": true,
+      "detail": "[{\"ledger_id\": \"RLG-0001\", \"case_id\": \"CASE-9001\", \"order_id\": \"ORD-9001\", \"source\": \"dispute\", \"amount\": \"250.0\", \"stat"
+    },
+    {
+      "name": "dashboard recovered_amount reflects it",
+      "ok": true,
+      "detail": "250.0"
+    },
+    {
+      "name": "case detail carries verification evidence",
+      "ok": true,
+      "detail": "[{\"verification_id\": \"VER-0001\", \"action_id\": \"ACT-0002\", \"case_id\": \"CASE-9001\", \"status\": \"RECOVERY_VERIFIED\", \"check_"
+    },
+    {
+      "name": "case timeline shows the full journey (evidence\u2192action\u2192verify\u2192audit)",
+      "ok": true,
+      "detail": "20 events"
+    },
+    {
+      "name": "in-tolerance (timing) variances classified LEGITIMATE by engine",
+      "ok": true,
+      "detail": "3848"
+    },
+    {
+      "name": "no LEGITIMATE (timing) variance ever produced an anomaly",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "timing variances carry non-zero deltas yet stay un-leaked",
+      "ok": true,
+      "detail": "27 tolerated"
+    },
+    {
+      "name": "every case traces to a LEAKAGE-classified anomaly (no timing FP)",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "cases expose FINANCE_REVIEW action",
+      "ok": true,
+      "detail": "150"
+    },
+    {
+      "name": "no tax-filing tool exists in registry",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "GST stays internal (no gateway action on GST path)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "first dispute created",
+      "ok": true,
+      "detail": "CREATE_DISPUTE, rows=1"
+    },
+    {
+      "name": "replay creates no second dispute row",
+      "ok": true,
+      "detail": "1 \u2192 1"
+    },
+    {
+      "name": "replay surfaces idempotent outcome",
+      "ok": true,
+      "detail": "COMPLETED"
+    },
+    {
+      "name": "single external dispute reference",
+      "ok": true,
+      "detail": "{'DIS-CASE-9001'}"
+    },
+    {
+      "name": "action executed",
+      "ok": true,
+      "detail": "CREATE_DISPUTE"
+    },
+    {
+      "name": "verification FAILED \u2014 money not observed",
+      "ok": true,
+      "detail": "FAILED"
+    },
+    {
+      "name": "recovered amount zero",
+      "ok": true,
+      "detail": "0.0"
+    },
+    {
+      "name": "no unverified ledger entry",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "verification attempts recorded for humans to escalate",
+      "ok": true,
+      "detail": "1 events"
+    },
+    {
+      "name": "no financial action executed on LLM failure",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "run does not claim recovery",
+      "ok": true,
+      "detail": "/0.0"
+    },
+    {
+      "name": "no dispute persisted from a failed plan",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "name": "failure visible in run status/errors",
+      "ok": true,
+      "detail": "BLOCKED_LLM ['simulated provider outage: timeout']"
+    },
+    {
+      "name": "unauthorized CREATE_PAYMENT_LINK not executed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "policy blocked the run",
+      "ok": true,
+      "detail": "BLOCKED_POLICY"
+    },
+    {
+      "name": "no CREATE_PAYMENT_LINK row persisted",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "attempt is audited",
+      "ok": true,
+      "detail": "6 entries"
+    },
+    {
+      "name": "denial decision recorded in audit chain",
+      "ok": true,
+      "detail": "[{\"audit_id\": \"AUD-0C1FD38A0006\", \"run_id\": \"RUN-0C1FD38A06F7\", \"case_id\": \"CASE-9001\", \"actor\": \"POLICY\", \"event_type\": \"POLICY_VIOLATION\","
+    }
+  ]
+}

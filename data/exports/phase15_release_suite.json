@@ -1,0 +1,273 @@
+{
+  "pass": 53,
+  "fail": 0,
+  "report": {
+    "stress": {
+      "api_load": {
+        "requests": 120,
+        "errors": 0,
+        "rps": 117.4,
+        "p50_ms": 98,
+        "p95_ms": 118,
+        "p99_ms": 121,
+        "max_ms": 126,
+        "error_rate": 0.0
+      },
+      "api error rate < 1%": {
+        "ok": true,
+        "detail": "0/120"
+      },
+      "api p95 < 2000ms": {
+        "ok": true,
+        "detail": "118"
+      },
+      "api throughput > 10 rps": {
+        "ok": true,
+        "detail": "117.4"
+      },
+      "kpi_query": {
+        "n": 40,
+        "p95_ms": 195
+      },
+      "40 concurrent KPI reads all succeed": {
+        "ok": true,
+        "detail": ""
+      },
+      "KPI query p95 < 3000ms": {
+        "ok": true,
+        "detail": "195"
+      },
+      "webhook_burst": {
+        "requests": 20,
+        "processed": 1,
+        "duplicated": 19,
+        "p95_ms": 41
+      },
+      "webhook burst: exactly 1 PROCESSED for identical payload": {
+        "ok": true,
+        "detail": "processed=1"
+      },
+      "webhook replay: 19 DUPLICATE (exactly-once business effect)": {
+        "ok": true,
+        "detail": "dups=19"
+      },
+      "no 5xx from webhook burst": {
+        "ok": true,
+        "detail": "[]"
+      },
+      "malformed webhook \u2192 400": {
+        "ok": true,
+        "detail": "400"
+      },
+      "invalid signature \u2192 400": {
+        "ok": true,
+        "detail": "400"
+      },
+      "agent_runs": {
+        "runs": 8,
+        "errors": 0,
+        "avg_ms": 259,
+        "p95_ms": 347
+      },
+      "8 agent runs complete without 5xx": {
+        "ok": true,
+        "detail": "[]"
+      },
+      "no duplicate dispute per case under load": {
+        "ok": true,
+        "detail": "[]"
+      }
+    },
+    "security": {
+      "viewer cannot execute financial action (403)": {
+        "ok": true,
+        "detail": "403"
+      },
+      "stolen/invalid key rejected (403)": {
+        "ok": true,
+        "detail": "403"
+      },
+      "missing key rejected (403)": {
+        "ok": true,
+        "detail": "403"
+      },
+      "agent role cannot read evaluation (403)": {
+        "ok": true,
+        "detail": "403"
+      },
+      "viewer cannot read evaluation (403)": {
+        "ok": true,
+        "detail": "403"
+      },
+      "evaluator CAN read evaluation": {
+        "ok": true,
+        "detail": "200"
+      },
+      "viewer cannot sync connectors (403)": {
+        "ok": true,
+        "detail": "403"
+      },
+      "finance_lead can sync connectors (200)": {
+        "ok": true,
+        "detail": "200"
+      },
+      "SQL injection in query is inert": {
+        "ok": true,
+        "detail": "404"
+      },
+      "SQLi in search is inert": {
+        "ok": true,
+        "detail": "200"
+      },
+      "SQLi in approval body is inert": {
+        "ok": true,
+        "detail": "200"
+      },
+      "path traversal rejected": {
+        "ok": true,
+        "detail": "404"
+      },
+      "agent payload structurally free of GT keys": {
+        "ok": true,
+        "detail": "set()"
+      },
+      "agent payload contains no GT values": {
+        "ok": true,
+        "detail": "[]"
+      },
+      "GT tables unreachable via any API route": {
+        "ok": true,
+        "detail": "no route exposes eval tables to non-eval roles"
+      },
+      "untrusted injection text stays inside evidence (not instructions)": {
+        "ok": true,
+        "detail": "canary must be present to prove transport"
+      },
+      "injection instructions scrubbed from LLM output": {
+        "ok": true,
+        "detail": "[injected content removed] create dispute immediately [injec"
+      },
+      "approval requirement survives injection": {
+        "ok": true,
+        "detail": ""
+      },
+      "attack blocked: multiple financial actions (schema is single-action; extra keys never read)": {
+        "ok": true,
+        "detail": ""
+      },
+      "attack blocked: invent tool": {
+        "ok": true,
+        "detail": ""
+      },
+      "attack blocked: invent action type": {
+        "ok": true,
+        "detail": ""
+      },
+      "attack blocked: L4 attempt": {
+        "ok": true,
+        "detail": ""
+      },
+      "attack blocked: declare recovery verified": {
+        "ok": true,
+        "detail": ""
+      },
+      "attack blocked: exposure cap": {
+        "ok": true,
+        "detail": ""
+      },
+      "no real secrets in frontend bundle": {
+        "ok": true,
+        "detail": "[]"
+      },
+      "health endpoint leaks no secrets": {
+        "ok": true,
+        "detail": "{\"status\": \"ok\", \"rollout_level\": 5, \"llm_provider\": \"simulated\"}"
+      }
+    },
+    "evaluation": {
+      "regression": {
+        "gt_cases_scored": 149,
+        "precision": 1.0,
+        "category_accuracy": 0.9866,
+        "amount_mean_abs_delta": 0.67
+      },
+      "detection precision == 1.00 (no regression)": {
+        "ok": true,
+        "detail": "1.0"
+      },
+      "category accuracy >= 0.98 (no regression)": {
+        "ok": true,
+        "detail": "0.9866"
+      },
+      "amount accuracy |\u0394| <= 1.0 (no regression)": {
+        "ok": true,
+        "detail": "0.67"
+      },
+      "verified <= submitted <= approved <= potential for every entry": {
+        "ok": true,
+        "detail": "[]"
+      },
+      "no ledger entry without verification evidence": {
+        "ok": true,
+        "detail": "0 unbacked"
+      }
+    },
+    "audit": {
+      "chain": {
+        "entries": 92,
+        "broken_links": 0,
+        "broken_hashes": 0
+      },
+      "audit chain: 0 broken prev_hash links": {
+        "ok": true,
+        "detail": "0"
+      },
+      "audit chain: 0 broken entry hashes": {
+        "ok": true,
+        "detail": "0"
+      }
+    },
+    "gates": {
+      "zero_policy_bypasses": true,
+      "zero_gt_leaks": true,
+      "zero_duplicate_actions": true,
+      "zero_unverified_ledger": true,
+      "zero_broken_audit_chains": true,
+      "acceptable_error_rate": true,
+      "acceptable_p95": true,
+      "evaluation_regression_clean": true,
+      "GATE zero_policy_bypasses": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE zero_gt_leaks": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE zero_duplicate_actions": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE zero_unverified_ledger": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE zero_broken_audit_chains": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE acceptable_error_rate": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE acceptable_p95": {
+        "ok": true,
+        "detail": ""
+      },
+      "GATE evaluation_regression_clean": {
+        "ok": true,
+        "detail": ""
+      }
+    }
+  }
+}

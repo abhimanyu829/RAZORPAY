@@ -1,0 +1,38 @@
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    environment:
+      - REVENUEGUARD_ENV=${REVENUEGUARD_ENV:-dev}
+      - REVENUEGUARD_ROLLOUT_LEVEL=${REVENUEGUARD_ROLLOUT_LEVEL:-3}
+      - REVENUEGUARD_LLM_PROVIDER=${REVENUEGUARD_LLM_PROVIDER:-simulated}
+      - REVENUEGUARD_LLM_BASE_URL=${REVENUEGUARD_LLM_BASE_URL:-}
+      - REVENUEGUARD_LLM_API_KEY=${REVENUEGUARD_LLM_API_KEY:-}
+      - REVENUEGUARD_LLM_MODEL=${REVENUEGUARD_LLM_MODEL:-}
+      - REVENUEGUARD_DATABASE_URL=${REVENUEGUARD_DATABASE_URL:-}
+      - REVENUEGUARD_WEBHOOK_SECRET_RAZORPAY=${REVENUEGUARD_WEBHOOK_SECRET_RAZORPAY:-dev-secret-razorpay}
+      - REVENUEGUARD_WEBHOOK_SECRET_SHOPIFY=${REVENUEGUARD_WEBHOOK_SECRET_SHOPIFY:-dev-secret-shopify}
+      - RAZORPAY_KEY_ID=${RAZORPAY_KEY_ID:-}
+      - RAZORPAY_KEY_SECRET=${RAZORPAY_KEY_SECRET:-}
+      - SHOPIFY_SHOP_URL=${SHOPIFY_SHOP_URL:-}
+      - SHOPIFY_ACCESS_TOKEN=${SHOPIFY_ACCESS_TOKEN:-}
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8010/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    # production: no secrets in image — inject via secret manager/env
+
+  webui:
+    image: nginx:alpine
+    volumes:
+      - ../webui/dist:/usr/share/nginx/html:ro
+    ports:
+      - "5173:80"
+    restart: unless-stopped
+    depends_on:
+      - api

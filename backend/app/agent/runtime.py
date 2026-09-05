@@ -31,18 +31,34 @@ from ..services.repository import repo, now_iso, _to_float
 # --------------------------------------------------------------------------- #
 
 class RunAudit:
+    """Per-run audit writer that extends the case's existing hash chain.
+
+    The chain is per-case and continuous across runs: each new run's first
+    entry links to the last entry_hash already persisted for that case
+    (GENESIS when none). Audit ids are globally unique (run-scoped prefix).
+    """
+
     def __init__(self, run_id: str, case_id: str):
         self.run_id = run_id
         self.case_id = case_id
-        self.prev = "GENESIS"
+        # continue the case's chain from its latest persisted entry
+        last = ""
+        for r in repo.read("audit_ledger"):
+            if r.get("case_id") == case_id and r.get("entry_hash"):
+                last = r["entry_hash"]
+        self.prev = last or "GENESIS"
+        self._seq_offset = 0
+        # avoid audit-id collisions with anything already persisted
+        self._prefix = run_id.replace("RUN-", "")[:8]
         self.entries: list[dict] = []
 
     def add(self, actor: str, event_type: str, decision: str = "",
             tool: str = "", params: dict | None = None, result: dict | None = None,
             amount: float | None = None, approval_id: str = "",
             new_state: str = "") -> dict:
+        self._seq_offset += 1
         e = {
-            "audit_id": f"AUD-{len(self.entries) + 1:05d}",
+            "audit_id": f"AUD-{self._prefix}{self._seq_offset:04d}",
             "run_id": self.run_id, "case_id": self.case_id,
             "actor": actor, "event_type": event_type, "tool_called": tool,
             "tool_parameters": json.dumps(params or {}, default=str),
@@ -283,6 +299,9 @@ class AgentRuntime:
                            "draft_content": plan.get("draft_content", ""),
                            "amount": _to_float(case.get("potential_recovery")
                                               or case.get("potential_leakage"))}
+                if force_scenario:
+                    from ..tools.simulator import simulator
+                    simulator.force(case_id, force_scenario)
                 try:
                     outcome2 = registry.dispatch("create_dispute", params2, case,
                                                 actor=actor, approval_id=approval_id2)

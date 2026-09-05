@@ -1,0 +1,15 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Api, fmtMoney, fmtTime } from '../api';
+import { Card, EmptyState, ErrorBox, Spinner } from '../components';
+export function AuditPage() {
+    const [caseFilter, setCaseFilter] = useState('');
+    const [limit, setLimit] = useState(300);
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['audit', caseFilter, limit],
+        queryFn: () => Api.get(`/api/v1/audit?limit=${limit}${caseFilter ? `&case_id=${caseFilter}` : ''}`),
+    });
+    const rows = data?.audit ?? [];
+    return (_jsxs("div", { className: "space-y-4", children: [_jsxs("div", { className: "flex flex-wrap items-center gap-2 text-xs", children: [_jsx("input", { value: caseFilter, onChange: e => setCaseFilter(e.target.value), placeholder: "Filter by case ID\u2026", className: "w-48 rounded-lg border border-slate-700 bg-slate-900 px-2.5 py-1.5 outline-none focus:border-sky-500" }), _jsx("select", { value: limit, onChange: e => setLimit(Number(e.target.value)), className: "rounded-lg border border-slate-700 bg-slate-900 px-2 py-1.5", children: [100, 300, 1000, 2000].map(n => _jsxs("option", { value: n, children: ["last ", n] }, n)) }), _jsx("span", { className: "ml-auto text-slate-500", children: "append-only hash chain \u2014 ordinary users cannot mutate history" })] }), isError && _jsx(ErrorBox, { msg: error.message }), isLoading && _jsx(Spinner, {}), _jsx(Card, { title: `Audit chain — ${rows.length} entries`, children: rows.length === 0 ? _jsx(EmptyState, { text: "No audit entries" }) : (_jsx("div", { className: "max-h-[65vh] overflow-auto", children: _jsxs("table", { className: "w-full text-[11px]", children: [_jsx("thead", { className: "sticky top-0 bg-slate-900", children: _jsx("tr", { className: "text-left text-[10px] uppercase tracking-wider text-slate-500", children: ['Time', 'Audit ID', 'Case', 'Actor', 'Event', 'Decision', 'Amount', 'prev → hash'].map(h => (_jsx("th", { className: "px-2 py-1.5", children: h }, h))) }) }), _jsx("tbody", { children: [...rows].reverse().map(r => (_jsxs("tr", { className: "border-t border-slate-800/50 hover:bg-slate-900/50", children: [_jsx("td", { className: "whitespace-nowrap px-2 py-1 text-slate-500", children: fmtTime(r.created_at) }), _jsx("td", { className: "px-2 py-1 font-mono text-slate-400", children: r.audit_id }), _jsx("td", { className: "px-2 py-1 font-mono text-sky-300", children: r.case_id }), _jsx("td", { className: "px-2 py-1 text-slate-400", children: r.actor }), _jsx("td", { className: "px-2 py-1 font-mono", children: r.event_type }), _jsx("td", { className: "px-2 py-1", children: r.decision || '—' }), _jsx("td", { className: "px-2 py-1 text-right tabular-nums", children: r.amount ? fmtMoney(r.amount) : '—' }), _jsxs("td", { className: "px-2 py-1 font-mono text-[9.5px] text-slate-600", children: [r.prev_hash?.slice(0, 6), "\u2192", r.entry_hash?.slice(0, 6)] })] }, r.audit_id))) })] }) })) })] }));
+}

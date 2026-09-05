@@ -1,0 +1,77 @@
+{
+  "service": "revenue-guard",
+  "alerts": [
+    {
+      "id": "api-health",
+      "severity": "critical",
+      "condition": "GET /health non-200 for 2 minutes",
+      "action": "page on-call; check uvicorn container + Supabase status"
+    },
+    {
+      "id": "high-error-rate",
+      "severity": "critical",
+      "condition": "5xx rate > 1% over 5 minutes",
+      "action": "page on-call; inspect logs for exception spikes"
+    },
+    {
+      "id": "connector-outage",
+      "severity": "warning",
+      "condition": "any connector unhealthy > 15 minutes",
+      "action": "notify ops; check provider status pages and credentials"
+    },
+    {
+      "id": "duplicate-action",
+      "severity": "critical",
+      "condition": "second CREATE_DISPUTE row for same case_id",
+      "action": "page on-call; idempotency violation — halt agent rollout level"
+    },
+    {
+      "id": "verification-backlog",
+      "severity": "warning",
+      "condition": "IN_PROGRESS verifications > 20 for 1 hour",
+      "action": "notify finance ops; escalate stuck disputes"
+    },
+    {
+      "id": "audit-chain-failure",
+      "severity": "critical",
+      "condition": "any audit entry where prev_hash != previous entry_hash (validator: backend/scripts/validate_audit_chain.py, cron every 15 min)",
+      "action": "page on-call + security; freeze agent actions until resolved"
+    },
+    {
+      "id": "authorization-anomaly",
+      "severity": "warning",
+      "condition": "403 rate > 5 per minute",
+      "action": "notify security; possible credential probing"
+    },
+    {
+      "id": "unverified-recovery",
+      "severity": "critical",
+      "condition": "recovery_ledger row without matching RECOVERY_VERIFIED event",
+      "action": "page on-call; quarantine ledger entry and re-verify"
+    },
+    {
+      "id": "llm-latency",
+      "severity": "warning",
+      "condition": "plan-only endpoint p95 > 10s over 15 minutes",
+      "action": "check provider status; bounded retry already in place"
+    },
+    {
+      "id": "approval-backlog",
+      "severity": "warning",
+      "condition": "PENDING approvals > 10 for 4 hours",
+      "action": "notify finance leads"
+    }
+  ],
+  "cron_jobs": [
+    {
+      "id": "audit-chain-validator",
+      "schedule": "*/15 * * * *",
+      "command": "python backend/scripts/validate_audit_chain.py --alert-if-broken"
+    },
+    {
+      "id": "connector-health",
+      "schedule": "*/5 * * * *",
+      "command": "curl -s -H 'X-API-Key: $ADMIN_KEY' http://api:8010/api/v1/connectors/health"
+    }
+  ]
+}
