@@ -498,3 +498,22 @@ async def eval_scorecard(request: Request):
 async def health():
     return {"status": "ok", "rollout_level": settings.rollout_level,
             "llm_provider": settings.llm_provider}
+
+
+# ------------------------------------------------------------- static webui
+# Serve the built control center (webui/dist) at / so the API port also
+# renders the UI. /api/* routes take precedence.
+from pathlib import Path as _Path
+
+_WEBUI = _Path(__file__).resolve().parents[2] / "webui" / "dist"
+if _WEBUI.exists():
+    from fastapi.staticfiles import StaticFiles as _StaticFiles
+    # html=True serves index.html at "/" and for unknown non-API paths
+    app.mount("/", _StaticFiles(directory=str(_WEBUI), html=True),
+              name="webui")
+else:  # keep / meaningful even without a build present
+    @app.get("/")
+    async def root():
+        return {"service": "Revenue Guard API",
+                "ui": "webui/dist not built — run: cd webui && npm run build",
+                "api": "/api/v1/*"}

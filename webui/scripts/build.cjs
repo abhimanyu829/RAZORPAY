@@ -53,6 +53,9 @@ async function main() {
     entryFileNames: 'app.js',
     format: 'esm',
     sourcemap: false,
+    banner: ('/* browser polyfill: React CJS deps read process.env.NODE_ENV */\n'
+             + 'const process = { env: { NODE_ENV: "production" } };\n'
+             + 'globalThis.process = globalThis.process || process;\n'),
   })
   await bundle.close()
 
