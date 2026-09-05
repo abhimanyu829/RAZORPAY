@@ -513,7 +513,7 @@ EVID-00511,CASE-0149,,RULE_RESULT,ENGINE,cfg.financial_rules:FR-FEE-EXCESS-001,r
 EVID-00512,CASE-0149,,RECON_RESULT,ENGINE,ops.anomaly_results:anm-00156,SETTLEMENT_MISMATCH detected 37.29 by FR-SETTLE-CALC-001,4c41f57b38954b46c0efa47e406ed64dd65b8a4f9eb5254912423d65b36139c8,2025-04-05T00:00:00Z
 EVID-00513,CASE-0149,,RULE_RESULT,ENGINE,cfg.financial_rules:FR-SETTLE-CALC-001,rule FR-SETTLE-CALC-001 evaluated to LEAKAGE,92721a1d592e667cfec36d980c4968dd25d2353654d60ceb830b5efa79ba2985,2025-04-05T00:00:00Z
 EVID-00514,CASE-0149,,RAW_PAYLOAD,RAZORPAY,raw.raw_source_records:payments:pay_000990axkkkkkk,raw gateway payload for payment pay_000990axkkkkkk,368649d95f917315afe9fafdbe2168067393de16c13e81b1dd6f773475761993,2025-04-05T00:00:00Z
-EVID-90001,CASE-9001,RCN-9001,RECON_RESULT,ENGINE,ops.reconciliation_results:RCN-9001,settlement â‚¹9514 vs expected â‚¹9764 â€” variance â‚¹250,hero90001,2026-09-05T05:58:46Z
-EVID-90002,CASE-9001,RCN-9001,RULE_RESULT,ENGINE,cfg.financial_rules:FR-SETTLE-CALC-001,"rule engine: variance exceeds tolerance, class LEAKAGE",hero90002,2026-09-05T05:58:46Z
-EVID-90003,CASE-9001,RCN-9001,RAW_PAYLOAD,ENGINE,raw.raw_source_records:payments:pay_hero_9001,raw gateway payload for payment pay_hero_9001,hero90003,2026-09-05T05:58:46Z
-EVID-90004,CASE-9001,RCN-9001,BANK_CREDIT,ENGINE,core.bank_transactions:BNK-9001,bank credit â‚¹9514 UTR009001 matches settlement exactly,hero90004,2026-09-05T05:58:46Z
+EVID-90001,CASE-9001,RCN-9001,RECON_RESULT,ENGINE,ops.reconciliation_results:RCN-9001,settlement â‚¹9514 vs expected â‚¹9764 â€” variance â‚¹250,hero90001,2026-09-05T06:05:59Z
+EVID-90002,CASE-9001,RCN-9001,RULE_RESULT,ENGINE,cfg.financial_rules:FR-SETTLE-CALC-001,"rule engine: variance exceeds tolerance, class LEAKAGE",hero90002,2026-09-05T06:05:59Z
+EVID-90003,CASE-9001,RCN-9001,RAW_PAYLOAD,ENGINE,raw.raw_source_records:payments:pay_hero_9001,raw gateway payload for payment pay_hero_9001,hero90003,2026-09-05T06:05:59Z
+EVID-90004,CASE-9001,RCN-9001,BANK_CREDIT,ENGINE,core.bank_transactions:BNK-9001,bank credit â‚¹9514 UTR009001 matches settlement exactly,hero90004,2026-09-05T06:05:59Z

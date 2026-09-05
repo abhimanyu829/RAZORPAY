@@ -1,0 +1,8 @@
+verification_id,action_id,case_id,status,check_type,expected_ref,observed_value,checked_at,notes
+VER-0001,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:55Z,dispute status RESOLVED
+VER-0002,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:56Z,dispute status RESOLVED
+VER-0003,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:57Z,dispute status RESOLVED
+VER-0004,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:57Z,dispute status RESOLVED
+VER-0005,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:58Z,dispute status RESOLVED
+VER-0006,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:59Z,dispute status RESOLVED
+VER-0007,ACT-0002,CASE-9001,RECOVERY_VERIFIED,AMOUNT_RECOVERED,DIS-CASE-9001,"{""recovered_amount"": 250.0, ""mode"": ""FULL"", ""bank_ref"": ""RCV-CASE-9001""}",2026-09-05T06:05:59Z,dispute status RESOLVED

@@ -1,2 +1,9 @@
 approval_id,case_id,action_id,risk_level,amount,requested_by,status,requested_at,decided_by,decided_at,decision_note
 APR-0001,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T05:58:46Z,finance-lead@example.com,2026-09-05T05:58:46Z,dev auto-decision
+APR-0002,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:55Z,finance-lead@example.com,2026-09-05T06:05:55Z,dev auto-decision
+APR-0003,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:56Z,finance-lead@example.com,2026-09-05T06:05:56Z,dev auto-decision
+APR-0004,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:57Z,finance-lead@example.com,2026-09-05T06:05:57Z,dev auto-decision
+APR-0005,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:57Z,finance-lead@example.com,2026-09-05T06:05:57Z,dev auto-decision
+APR-0006,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:58Z,finance-lead@example.com,2026-09-05T06:05:58Z,dev auto-decision
+APR-0007,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:59Z,finance-lead@example.com,2026-09-05T06:05:59Z,dev auto-decision
+APR-0008,CASE-9001,,L3,250.00,AGENT,APPROVED,2026-09-05T06:05:59Z,finance-lead@example.com,2026-09-05T06:05:59Z,dev auto-decision
