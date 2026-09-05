@@ -1,7 +1,6 @@
 # Revenue Guard — AI Revenue Leakage Detection, Diagnosis & Autonomous Recovery Agent
 
-Deterministic financial truth first. AI agent second. PostgreSQL as the single
-source of truth. Zero LLM arithmetic.
+Deterministic financial truth first. AI agent second. PostgreSQL as single source of truth. Zero LLM arithmetic.
 
 ## Quick start
 
@@ -19,7 +18,7 @@ python pipeline\engine.py
 python pipeline\cases.py
 
 # 5. Run the agent loop: observe→investigate→reason→plan→act→verify, with
-#    human gate, verification, and hash-chained audit
+#  human gate, verification, and hash-chained audit
 python agent\agent_loop.py
 
 # 6. Score against hidden ground truth
@@ -51,7 +50,7 @@ from the agent role).
 | `generators/` | causal master-transaction generator + anomaly injector (ground truth) |
 | `data/raw/` | source-system CSVs (shopify / razorpay / bank / accounting) |
 | `data/staging/` | engine outputs: recon results, anomalies, cases, actions, audit |
-| `data/ground_truth/` | EVAL-ONLY hidden truth (`true_*` columns) |
+| `data/ground_truth/` | EVAL-ONLY hidden truth (`true_` columns) |
 | `data/exports/` | scorecards, KPI, case scores |
 | `database/` | full PostgreSQL DDL: schema, seed, functions, views, indexes, queries |
 | `pipeline/` | deterministic reconciliation / case builder (mirrors SQL functions) |
@@ -60,7 +59,7 @@ from the agent role).
 
 ## Core principle
 
-EXPECTED ≠ ACTUAL is a **variance**, not leakage. The rule engine classifies
+EXPECTED ≠ ACTUAL is a variance, not leakage. The rule engine classifies
 LEGITIMATE (tolerance) / TIMING (window open) / ADJUSTMENT (documented) /
 LEAKAGE (unexplained past deadline). Only LEAKAGE opens a case. The LLM never
 computes money — it investigates, plans, drafts, and escalates within policy.
