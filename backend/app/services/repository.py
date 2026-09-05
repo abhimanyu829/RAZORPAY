@@ -67,6 +67,9 @@ class CsvRepository:
             "connector_runs": self.runtime / "connector_runs.csv",
             "webhook_events": self.runtime / "webhook_events.csv",
             "recovery_ledger": self.runtime / "recovery_ledger.csv",
+            "connector_checkpoints": self.runtime / "connector_checkpoints.csv",
+            "raw_source_records": self.runtime / "raw_source_records.csv",
+            "quarantine_records": self.runtime / "quarantine_records.csv",
         }
         if table not in mapping:
             raise KeyError(f"unknown table {table}")

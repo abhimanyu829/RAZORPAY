@@ -1,4 +1,4 @@
-﻿"""HERO CASE â€” Section 39 end-to-end demonstration.
+"""HERO CASE â€” Section 39 end-to-end demonstration.
 
 The exact scenario from the brief:
     payment â‚¹10,000 Â· expected fee â‚¹200 Â· GST on fee â‚¹36
@@ -156,20 +156,49 @@ def build_hero_universe():
             "source_reference": ref, "description": desc,
             "payload_sha256": "hero" + evid[-5:], "collected_at": now_iso(),
         })
-    print(f"hero universe ready: {HERO_ORDER} â‚¹10,000 â†’ expected settle â‚¹9,764, "
-          f"actual â‚¹9,514, variance â‚¹250")
+    print(f"hero universe ready: {HERO_ORDER} Rs.10,000 -> expected settle Rs.9,764, "
+          f"actual Rs.9,514, variance Rs.250")
 
 
-def run_hero(escalation_mode: str = "success"):
-    """Drive the hero case through the live agent (Â§39)."""
+def reset_runtime():
+    """Clear runtime artifacts (actions/approvals/verifications/audit/runs/ledger)
+    so scenario sweeps start from a clean slate. Never touches raw/core/staging.
+    Tolerates transient file locks (e.g. a concurrently running API server):
+    on a locked file, empties contents instead of deleting."""
+    import time
+    for t in ("recovery_actions", "approvals", "verification_events",
+              "audit_ledger", "agent_runs", "recovery_ledger"):
+        p = repo.runtime / f"{t}.csv"
+        if not p.exists():
+            continue
+        for attempt in range(3):
+            try:
+                p.unlink()
+                break
+            except PermissionError:
+                if attempt == 2:
+                    # last resort: truncate contents (CSV readers then see 0 rows)
+                    with open(p, "w", encoding="utf-8") as f:
+                        f.truncate(0)
+                else:
+                    time.sleep(0.2)
+
+
+def run_hero(escalation_mode: str = "success", fresh_runtime: bool = False):
+    """Drive the hero case through the live agent (Section 39)."""
+    if fresh_runtime:
+        reset_runtime()
     build_hero_universe()
     from app.tools.simulator import simulator
-    simulator.force(HERO_CASE, escalation_mode)
+    simulator.clear_forced()
+    if escalation_mode:
+        simulator.force(HERO_CASE, escalation_mode)
     res = runtime.run_case(HERO_CASE)
     return res
 
 
 if __name__ == "__main__":
+    import json
     mode = sys.argv[1] if len(sys.argv) > 1 else "success"
     res = run_hero(mode)
     print(json.dumps({

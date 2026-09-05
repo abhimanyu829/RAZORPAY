@@ -1,0 +1,32 @@
+{
+  "rollup": {
+    "cases_run": 150,
+    "completed": 150,
+    "disputes_executed": 96,
+    "recovery_verified": 47,
+    "partial_recovery": 23,
+    "blocked_by_policy": 0,
+    "blocked_by_llm": 0,
+    "failed": 0,
+    "recovered_amount_verified": 21663.83,
+    "recovered_amount_partial": 4816.51,
+    "ledger_rows": 47,
+    "audit_entries": 1685,
+    "agent_runs": 150,
+    "approvals": 96,
+    "verifications": 90,
+    "avg_case_ms": 130,
+    "total_seconds": 93.3,
+    "policy_blocks": []
+  },
+  "evaluation": {
+    "gt_anomalies_cased": 149,
+    "false_positives": 0,
+    "precision": 1.0,
+    "category_accuracy": 0.9866,
+    "amount_mean_abs_delta": 0.67,
+    "recovered_amount": 21663.83,
+    "true_recoverable_amount": 43811.92,
+    "recovery_rate": 0.4945
+  }
+}
